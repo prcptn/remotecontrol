@@ -8,12 +8,10 @@ import android.hardware.Sensor;
 import android.hardware.SensorEvent;
 import android.hardware.SensorEventListener;
 import android.hardware.SensorManager;
-import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.Handler;
-import android.text.Layout;
 import android.content.SharedPreferences;
 import android.util.Log;
 import android.view.Display;
@@ -33,11 +31,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.CompoundButton;
 import android.widget.SeekBar;
-
-import com.beamng.remotecontrol.R;
-import com.google.android.gms.appindexing.Action;
-import com.google.android.gms.appindexing.AppIndex;
-import com.google.android.gms.common.api.GoogleApiClient;
 
 import java.io.IOException;
 import java.net.DatagramPacket;
@@ -121,11 +114,6 @@ public class MainActivity extends Activity implements SensorEventListener {
     private int KEEP_ALIVE_TIME = 1;
     private TimeUnit KEEP_ALIVE_TIME_UNIT = TimeUnit.SECONDS;
     private int NUMBER_OF_CORES;
-    /**
-     * ATTENTION: This was auto-generated to implement the App Indexing API.
-     * See https://g.co/AppIndexing/AndroidStudio for more information.
-     */
-    private GoogleApiClient client;
     private InetAddress hostAddress;
 
     public static final String prefsName = "UserSettings";
@@ -147,8 +135,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         editor.putInt("unit", useKMH);
         editor.putFloat("sens", sensitivitySetting);
         // Commit the edits!
-        editor.commit();
-
+        editor.apply();
     }
 
     @Override
@@ -190,7 +177,7 @@ public class MainActivity extends Activity implements SensorEventListener {
         display = ((WindowManager) getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
         orientation = display.getRotation();
         lpTime = System.currentTimeMillis();
-        timeDiff = 0l;
+        timeDiff = 0L;
         //Multi-Thread-executor:
         // A queue of Runnables
         // instantiate the queue of Runnables as a LinkedBlockingQueue
@@ -307,11 +294,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         //initListeners();
 
         mHandler = new Handler();
-
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client = new GoogleApiClient.Builder(this).addApi(AppIndex.API).build();
     }
 
 
@@ -350,29 +332,6 @@ public class MainActivity extends Activity implements SensorEventListener {
                 }
                 break;
         }
-    }
-
-    @Override
-    public void onStop() {
-        super.onStop();
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.beamng.remotecontrol/http/host/path")
-        );
-        AppIndex.AppIndexApi.end(client, viewAction);
-        // unregister sensor listeners to prevent the activity from draining the device's battery.
-        mSensorManager.unregisterListener(this);
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.disconnect();
     }
 
     @Override
@@ -425,26 +384,6 @@ public class MainActivity extends Activity implements SensorEventListener {
         }
     };
 
-    @Override
-    public void onStart() {
-        super.onStart();
-
-        // ATTENTION: This was auto-generated to implement the App Indexing API.
-        // See https://g.co/AppIndexing/AndroidStudio for more information.
-        client.connect();
-        Action viewAction = Action.newAction(
-                Action.TYPE_VIEW, // TODO: choose an action type.
-                "Main Page", // TODO: Define a title for the content shown.
-                // TODO: If you have web page content that matches this app activity's content,
-                // make sure this auto-generated web page URL is correct.
-                // Otherwise, set the URL to null.
-                Uri.parse("http://host/path"),
-                // TODO: Make sure this auto-generated app deep link URI is correct.
-                Uri.parse("android-app://com.beamng.remotecontrol/http/host/path")
-        );
-        AppIndex.AppIndexApi.start(client, viewAction);
-    }
-
     class calculateFusedOrientationTask extends TimerTask {
         public void run() {
             // update sensor output in GUI
@@ -474,26 +413,18 @@ public class MainActivity extends Activity implements SensorEventListener {
     }
 
     private void hideSystemUI() {
-        // If the Android version is lower than Jellybean, use this call to hide
-        // the status bar.
-        if (Build.VERSION.SDK_INT < 16) {
-            getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
-                    WindowManager.LayoutParams.FLAG_FULLSCREEN);
+        View decorView = getWindow().getDecorView();
+        // Hide both the navigation bar and the status bar.
+        // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher
+        int uiOptions;
+        if (Build.VERSION.SDK_INT >= 19) {
+            uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
         } else {
-            View decorView = getWindow().getDecorView();
-            // Hide both the navigation bar and the status bar.
-            // SYSTEM_UI_FLAG_FULLSCREEN is only available on Android 4.1 and higher
-            int uiOptions;
-            if (Build.VERSION.SDK_INT >= 19) {
-                uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION | View.SYSTEM_UI_FLAG_IMMERSIVE_STICKY;
-                decorView.setSystemUiVisibility(uiOptions);
-            } else {
-                uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
-                        | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
-                decorView.setSystemUiVisibility(uiOptions);
-            }
+            uiOptions = View.SYSTEM_UI_FLAG_HIDE_NAVIGATION
+                    | View.SYSTEM_UI_FLAG_FULLSCREEN | View.SYSTEM_UI_FLAG_LAYOUT_STABLE | View.SYSTEM_UI_FLAG_LAYOUT_HIDE_NAVIGATION;
         }
+        decorView.setSystemUiVisibility(uiOptions);
     }
 
     public void connectionTimeout() {

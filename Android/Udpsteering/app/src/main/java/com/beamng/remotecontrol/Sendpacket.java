@@ -1,7 +1,5 @@
 package com.beamng.remotecontrol;
 
-import android.util.Log;
-
 import java.nio.ByteBuffer;
 
 public class Sendpacket {

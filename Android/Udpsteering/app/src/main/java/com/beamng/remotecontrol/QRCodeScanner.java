@@ -97,7 +97,7 @@ public class QRCodeScanner extends Activity
         final String securityCode = parts[1];
 
         // Check for WiFi connectivity
-        wifiManager = (WifiManager) getSystemService(WIFI_SERVICE);
+        wifiManager = (WifiManager) getApplicationContext().getSystemService(WIFI_SERVICE);
 
         try {
             int ipAddress = wifiManager.getConnectionInfo().getIpAddress();

@@ -7,8 +7,6 @@ import android.util.AttributeSet;
 import android.widget.TextView;
 import android.util.Log;
 
-import com.beamng.remotecontrol.R;
-
 public class CustomTextView extends TextView {
 
     public CustomTextView(Context context, AttributeSet attrs, int defStyle) {
